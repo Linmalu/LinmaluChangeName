@@ -4,14 +4,18 @@
  - HomePage : http://blog.linmalu.com/
  - Language : JAVA
  - Spigot : bukkit-1.7.9-R0.2
- - Version : 1.0
+ - Version : 1.01
 
 ###업데이트
-- 모드버킷에서는 작동하지 않습니다.
-- LinmaluLibrary 1.02 버전이 필요합니다.
+- 스킨을 변경하는 기능 추가
+- 명령어에서 변경된 이름으로 플레이어를 인식하지 못하는 버그 수정
+- 이름 중복방지기능 추가가
 
 ###소개
-- 이름변경 플러그인은 자신의 이름을 변경할 수 있습니다.
+- 이름변경 플러그인은 자신의 이름과 스킨을 변경할 수 있습니다.
+- 이름변경 플러그인은 패킷을 이용하므로 모드버킷과는 호환이 되지 않습니다.
+- 모든 명령어의 권한은 OP만 사용가능합니다.
+- LinmaluLibrary 1.02 버전이 필요합니다.
 - 플러그인은 ProtocolLib 플러그인과 LinmaluLibrary 플러그인이 필요합니다. 없을 경우에는 플러그인이 작동하지 않습니다.
 - ProtocolLib 플러그인 : http://dev.bukkit.org/bukkit-plugins/protocollib/
 - LinmaluLibrary 플러그인 : http://blog.linmalu.com/
