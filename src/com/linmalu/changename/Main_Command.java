@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 
 import com.linmalu.LinmaluLibrary.API.LinmaluTellraw;
 import com.linmalu.changename.data.GameData;
+import com.linmalu.changename.data.PlayerData;
 import com.linmalu.library.api.LinmaluVersion;
 
 public class Main_Command implements CommandExecutor
@@ -53,7 +54,8 @@ public class Main_Command implements CommandExecutor
 		{
 			Player player = (Player)sender;
 			GameData data = Main.getMain().getGameData();
-			if(args.length == 2 && args[0].equals("등록"))
+			PlayerData pd = data.getPlayer(player.getName());
+			if(args.length > 1 && args[0].equals("등록"))
 			{
 				if(args[1].length() > 16)
 				{
@@ -65,7 +67,12 @@ public class Main_Command implements CommandExecutor
 				}
 				else
 				{
-					data.addName(player, args[1]);
+					String skin = null;
+					if(args.length > 2)
+					{
+						skin = args[2];
+					}
+					data.addPlayer(player, args[1], skin);
 					sender.sendMessage(Main.getMain().getTitle() + ChatColor.GOLD + args[1] + ChatColor.GREEN + "이름이 등록되었습니다.");
 				}
 				return true;
@@ -74,28 +81,28 @@ public class Main_Command implements CommandExecutor
 			{
 				if(args[0].equals("변경"))
 				{
-					if(!data.isName(player.getName()))
+					if(pd == null)
 					{
 						sender.sendMessage(Main.getMain().getTitle() + ChatColor.YELLOW + "이름이 등록되지 않았습니다.");
 					}
-					else if(data.isChange(player.getName()))
+					else if(pd.isChange())
 					{
 						sender.sendMessage(Main.getMain().getTitle() + ChatColor.YELLOW + "이름을 변경한 상태입니다.");
 					}
 					else
 					{
 						data.changePlayer(player, true);
-						sender.sendMessage(Main.getMain().getTitle() + ChatColor.GOLD + data.getChangeName(player.getName()) + ChatColor.GREEN + "이름으로 변경되었습니다.");
+						sender.sendMessage(Main.getMain().getTitle() + ChatColor.GOLD + pd.getChangeName() + ChatColor.GREEN + "이름으로 변경되었습니다.");
 					}
 					return true;
 				}
 				else if(args[0].equals("취소"))
 				{
-					if(!data.isName(player.getName()))
+					if(pd == null)
 					{
 						sender.sendMessage(Main.getMain().getTitle() + ChatColor.YELLOW + "이름이 등록되지 않았습니다.");
 					}
-					else if(!data.isChange(player.getName()))
+					else if(!pd.isChange())
 					{
 						sender.sendMessage(Main.getMain().getTitle() + ChatColor.YELLOW + "이름을 변경하지 않았습니다.");
 					}
@@ -108,26 +115,26 @@ public class Main_Command implements CommandExecutor
 				}
 				else if(args[0].equals("삭제"))
 				{
-					if(!data.isName(player.getName()))
+					if(pd == null)
 					{
 						sender.sendMessage(Main.getMain().getTitle() + ChatColor.YELLOW + "이름이 등록되지 않았습니다.");
 					}
 					else
 					{
-						data.removeName(player);
+						data.removePlayer(player);
 						sender.sendMessage(Main.getMain().getTitle() + ChatColor.GREEN + "등록된 이름이 삭제되었습니다.");
 					}
 					return true;
 				}
 				else if(args[0].equals("확인"))
 				{
-					if(!data.isName(player.getName()))
+					if(pd == null)
 					{
 						sender.sendMessage(Main.getMain().getTitle() + ChatColor.YELLOW + "이름이 등록되지 않았습니다.");
 					}
 					else
 					{
-						sender.sendMessage(Main.getMain().getTitle() + ChatColor.GOLD + data.getChangeName(player.getName()) + ChatColor.GREEN + "이름이 등록되어있습니다.");
+						sender.sendMessage(Main.getMain().getTitle() + ChatColor.GOLD + pd.getChangeName() + ChatColor.GREEN + "이름과 " + ChatColor.GOLD + pd.getSkin() + ChatColor.GREEN + "스킨이 등록되어있습니다.");
 					}
 					return true;
 				}
@@ -138,13 +145,14 @@ public class Main_Command implements CommandExecutor
 					return true;
 				}
 			}
-			if(args.length >= 3 && args[0].equals("관리자"))
+			else if(args.length >= 3 && args[0].equals("관리자"))
 			{
 				@SuppressWarnings("deprecation")
 				Player p = Bukkit.getPlayer(args[1]);
 				if(p != null)
 				{
-					if(args.length == 4 && args[2].equals("등록"))
+					pd = data.getPlayer(args[1]);
+					if(args.length > 3 && args[2].equals("등록"))
 					{
 						if(args[3].length() > 16)
 						{
@@ -156,7 +164,12 @@ public class Main_Command implements CommandExecutor
 						}
 						else
 						{
-							data.addName(p, args[3]);
+							String skin = null;
+							if(args.length > 4)
+							{
+								skin = args[4];
+							}
+							data.addPlayer(player, args[3], skin);
 							sender.sendMessage(Main.getMain().getTitle() + ChatColor.GOLD + args[3] + ChatColor.GREEN + "이름이 등록되었습니다.");
 							p.sendMessage(Main.getMain().getTitle() + ChatColor.GOLD + args[3] + ChatColor.GREEN + "이름이 등록되었습니다.");
 						}
@@ -166,29 +179,29 @@ public class Main_Command implements CommandExecutor
 					{
 						if(args[2].equals("변경"))
 						{
-							if(!data.isName(p.getName()))
+							if(pd == null)
 							{
 								sender.sendMessage(Main.getMain().getTitle() + ChatColor.YELLOW + "이름이 등록되지 않았습니다.");
 							}
-							else if(data.isChange(p.getName()))
+							else if(pd.isChange())
 							{
 								sender.sendMessage(Main.getMain().getTitle() + ChatColor.YELLOW + "이름을 변경한 상태입니다.");
 							}
 							else
 							{
 								data.changePlayer(p, true);
-								sender.sendMessage(Main.getMain().getTitle() + ChatColor.GOLD + data.getChangeName(p.getName()) + ChatColor.GREEN + "이름으로 변경되었습니다.");
-								p.sendMessage(Main.getMain().getTitle() + ChatColor.GOLD + data.getChangeName(p.getName()) + ChatColor.GREEN + "이름으로 변경되었습니다.");
+								sender.sendMessage(Main.getMain().getTitle() + ChatColor.GOLD + pd.getChangeName() + ChatColor.GREEN + "이름으로 변경되었습니다.");
+								p.sendMessage(Main.getMain().getTitle() + ChatColor.GOLD + pd.getChangeName() + ChatColor.GREEN + "이름으로 변경되었습니다.");
 							}
 							return true;
 						}
 						else if(args[2].equals("취소"))
 						{
-							if(!data.isName(p.getName()))
+							if(pd == null)
 							{
 								sender.sendMessage(Main.getMain().getTitle() + ChatColor.YELLOW + "이름이 등록되지 않았습니다.");
 							}
-							else if(!data.isChange(p.getName()))
+							else if(!pd.isChange())
 							{
 								sender.sendMessage(Main.getMain().getTitle() + ChatColor.YELLOW + "이름을 변경하지 않았습니다.");
 							}
@@ -202,13 +215,13 @@ public class Main_Command implements CommandExecutor
 						}
 						else if(args[2].equals("삭제"))
 						{
-							if(!data.isName(p.getName()))
+							if(pd == null)
 							{
 								sender.sendMessage(Main.getMain().getTitle() + ChatColor.YELLOW + "이름이 등록되지 않았습니다.");
 							}
 							else
 							{
-								data.removeName(p);
+								data.removePlayer(p);
 								sender.sendMessage(Main.getMain().getTitle() + ChatColor.GREEN + "등록된 이름이 삭제되었습니다.");
 								p.sendMessage(Main.getMain().getTitle() + ChatColor.GREEN + "등록된 이름이 삭제되었습니다.");
 							}

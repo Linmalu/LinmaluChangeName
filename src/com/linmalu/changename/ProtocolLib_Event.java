@@ -1,8 +1,9 @@
 package com.linmalu.changename;
 
-import java.util.ArrayList;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
@@ -10,9 +11,13 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import com.comphenix.protocol.wrappers.WrappedSignedProperty;
+import com.google.common.collect.Multimap;
 import com.linmalu.LinmaluLibrary.packetwrapper.WrapperPlayClientTabComplete;
 import com.linmalu.LinmaluLibrary.packetwrapper.WrapperPlayServerNamedEntitySpawn;
 import com.linmalu.changename.data.GameData;
+import com.linmalu.changename.data.PlayerData;
+import com.linmalu.library.api.LinmaluPlayer;
 
 public class ProtocolLib_Event extends PacketAdapter
 {
@@ -23,39 +28,40 @@ public class ProtocolLib_Event extends PacketAdapter
 		super(Main.getMain(), ListenerPriority.NORMAL, PacketType.Play.Server.TAB_COMPLETE, PacketType.Play.Server.NAMED_ENTITY_SPAWN, PacketType.Play.Client.TAB_COMPLETE);
 	}
 	@Override
+	@SuppressWarnings("deprecation")
 	public void onPacketSending(PacketEvent event)
 	{
 		if(event.getPacketType() == PacketType.Play.Server.TAB_COMPLETE)
 		{
 			StructureModifier<String[]> sm = event.getPacket().getStringArrays();
 			String[] tabs = (String[])sm.read(0);
-			if(tabs.length == Bukkit.getOnlinePlayers().length)
+			for(String player : tabs)
 			{
-				ArrayList<String> list = new ArrayList<>();
-				for(String tab : tabs)
+				if(Bukkit.getPlayer(player) == null)
 				{
-					if(data.isChange(tab))
-					{
-						list.add(data.getNowName(tab));
-					}
-					else
-					{
-						list.add(tab);
-					}
+					return;
 				}
-				sm.write(0, list.toArray(new String[list.size()]));
+			}
+			for(int i = 0; i < tabs.length; i++)
+			{
+				tabs[i] = data.getNowName(tabs[i]);
 			}
 		}
 		else if(event.getPacketType() == PacketType.Play.Server.NAMED_ENTITY_SPAWN)
 		{
 			WrapperPlayServerNamedEntitySpawn nes = new WrapperPlayServerNamedEntitySpawn(event.getPacket());
-			if(data.isChange(nes.getPlayerName()))
+			Player player = Bukkit.getPlayer(UUID.fromString(nes.getPlayerUUID()));
+			String name = data.getNowName(nes.getPlayerName());
+			player.setPlayerListName(name);
+			WrappedGameProfile wgp = new WrappedGameProfile(nes.getPlayerUUID(), name);
+			PlayerData pd = data.getPlayer(player.getName());
+			Multimap<String, WrappedSignedProperty> wsp = LinmaluPlayer.getProperties(pd == null ? player.getName() : pd.getNowSkin());
+			if(wsp == null)
 			{
-				String name = data.getNowName(nes.getPlayerName());
-				WrappedGameProfile gp = new WrappedGameProfile(nes.getPlayerUUID(), name);
-				gp.getProperties().putAll(nes.getProfile().getProperties());
-				nes.setProfile(gp);
+				LinmaluPlayer.change(player, name, pd.getNowSkin());
 			}
+			wgp.getProperties().putAll(wsp == null ? WrappedGameProfile.fromPlayer(player).getProperties() : wsp);
+			nes.setProfile(wgp);
 		}
 	}
 	@Override

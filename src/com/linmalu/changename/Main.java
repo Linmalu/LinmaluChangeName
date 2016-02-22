@@ -34,6 +34,6 @@ public class Main extends JavaPlugin
 	}
 	public String getTitle()
 	{
-		return ChatColor.AQUA + "[" + getDescription().getName() + "] ";
+		return ChatColor.AQUA + "[" + getDescription().getDescription() + "] ";
 	}
 }
