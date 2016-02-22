@@ -52,14 +52,9 @@ public class ProtocolLib_Event extends PacketAdapter
 			WrapperPlayServerNamedEntitySpawn nes = new WrapperPlayServerNamedEntitySpawn(event.getPacket());
 			Player player = Bukkit.getPlayer(UUID.fromString(nes.getPlayerUUID()));
 			String name = data.getNowName(nes.getPlayerName());
-			player.setPlayerListName(name);
 			WrappedGameProfile wgp = new WrappedGameProfile(nes.getPlayerUUID(), name);
 			PlayerData pd = data.getPlayer(player.getName());
 			Multimap<String, WrappedSignedProperty> wsp = LinmaluPlayer.getProperties(pd == null ? player.getName() : pd.getNowSkin());
-			if(wsp == null)
-			{
-				LinmaluPlayer.change(player, name, pd.getNowSkin());
-			}
 			wgp.getProperties().putAll(wsp == null ? WrappedGameProfile.fromPlayer(player).getProperties() : wsp);
 			nes.setProfile(wgp);
 		}

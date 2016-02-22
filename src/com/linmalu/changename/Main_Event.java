@@ -23,6 +23,7 @@ public class Main_Event implements Listener
 		{
 			LinmaluVersion.check(Main.getMain(), player);
 		}
+		data.joinEvent(player);
 	}
 	@EventHandler
 	public void Event(AsyncPlayerChatEvent event)

@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import com.linmalu.changename.Main;
@@ -55,11 +57,43 @@ public class GameData
 			e.printStackTrace();
 		}
 	}
-	public boolean isChangeName(String name)
+	@SuppressWarnings("deprecation")
+	public void joinEvent(Player player)
 	{
+		player.setPlayerListName(players.containsKey(player.getName()) ? players.get(player.getName()).getNowName() : player.getName());
+		for(String name : players.keySet())
+		{
+			if(players.get(name).getChangeName().equalsIgnoreCase(player.getName()))
+			{
+				Player p = Bukkit.getPlayer(name);
+				if(p != null)
+				{
+					p.sendMessage(Main.getMain().getTitle() + ChatColor.YELLOW + "같은 이름의 플레이어가 접속하여 이름이 삭제됩니다.");
+				}
+				removePlayer(name);
+				return;
+			}
+		}
+	}
+	public boolean isName(String name)
+	{
+		for(String key : players.keySet())
+		{
+			if(name.equalsIgnoreCase(key))
+			{
+				return true;
+			}
+		}
 		for(PlayerData pd : players.values())
 		{
-			if(name.equals(pd.getChangeName()))
+			if(name.equalsIgnoreCase(pd.getChangeName()))
+			{
+				return true;
+			}
+		}
+		for(Player player : Bukkit.getOnlinePlayers())
+		{
+			if(name.equalsIgnoreCase(player.getName()))
 			{
 				return true;
 			}
@@ -74,7 +108,7 @@ public class GameData
 	{
 		for(PlayerData pd : players.values())
 		{
-			if(name.equals(pd.getChangeName()))
+			if(name.equalsIgnoreCase(pd.getChangeName()))
 			{
 				return pd.getName();
 			}
@@ -85,35 +119,40 @@ public class GameData
 	{
 		for(PlayerData pd : players.values())
 		{
-			if(name.equals(pd.getChangeName()) || name.equals(pd.getName()))
+			if(name.equalsIgnoreCase(pd.getChangeName()) || name.equalsIgnoreCase(pd.getName()))
 			{
 				return pd.isChange() ? pd.getChangeName() : pd.getName();
 			}
 		}
 		return name;
 	}
-	public void addPlayer(Player player, String name, String skin)
+	public void addPlayer(String name, String changeName, String skin)
 	{
-		if(players.containsKey(player.getName()))
+		if(players.containsKey(name))
 		{
-			players.get(player.getName()).setData(name, skin);
+			players.get(name).setData(changeName, skin);
 		}
 		else
 		{
-			players.put(player.getName(), new PlayerData(player.getName(), name, skin, false));
+			players.put(name, new PlayerData(name, changeName, skin, false));
 		}
-		changePlayer(player, false);
+		changePlayer(name, false);
 	}
-	public void removePlayer(Player player)
+	public void removePlayer(String name)
 	{
-		changePlayer(player, false);
-		players.remove(player.getName());
+		changePlayer(name, false);
+		players.remove(name);
 	}
-	public void changePlayer(Player player, boolean change)
+	@SuppressWarnings("deprecation")
+	public void changePlayer(String name, boolean change)
 	{
-		PlayerData pd = players.get(player.getName());
+		PlayerData pd = players.get(name);
 		pd.setChange(change);
-		LinmaluPlayer.change(player, pd.getNowName(), pd.getNowSkin());
+		Player player = Bukkit.getPlayer(name);
+		if(player != null)
+		{
+			LinmaluPlayer.change(player, pd.getNowName(), pd.getNowSkin());
+		}
 		saveConfig();
 	}
 }

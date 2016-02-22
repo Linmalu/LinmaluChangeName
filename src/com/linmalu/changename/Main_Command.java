@@ -61,7 +61,7 @@ public class Main_Command implements CommandExecutor
 				{
 					sender.sendMessage(Main.getMain().getTitle() + ChatColor.YELLOW + "이름 길이가 16자를 넘어갑니다.");
 				}
-				else if(data.isChangeName(args[1]))
+				else if(data.isName(args[1]))
 				{
 					sender.sendMessage(Main.getMain().getTitle() + ChatColor.YELLOW + "이미 존재하는 이름입니다.");
 				}
@@ -72,7 +72,7 @@ public class Main_Command implements CommandExecutor
 					{
 						skin = args[2];
 					}
-					data.addPlayer(player, args[1], skin);
+					data.addPlayer(player.getName(), args[1], skin);
 					sender.sendMessage(Main.getMain().getTitle() + ChatColor.GOLD + args[1] + ChatColor.GREEN + "이름이 등록되었습니다.");
 				}
 				return true;
@@ -91,7 +91,7 @@ public class Main_Command implements CommandExecutor
 					}
 					else
 					{
-						data.changePlayer(player, true);
+						data.changePlayer(player.getName(), true);
 						sender.sendMessage(Main.getMain().getTitle() + ChatColor.GOLD + pd.getChangeName() + ChatColor.GREEN + "이름으로 변경되었습니다.");
 					}
 					return true;
@@ -108,7 +108,7 @@ public class Main_Command implements CommandExecutor
 					}
 					else
 					{
-						data.changePlayer(player, false);
+						data.changePlayer(player.getName(), false);
 						sender.sendMessage(Main.getMain().getTitle() + ChatColor.GREEN + "이름 변경이 취소되었습니다.");
 					}
 					return true;
@@ -121,7 +121,7 @@ public class Main_Command implements CommandExecutor
 					}
 					else
 					{
-						data.removePlayer(player);
+						data.removePlayer(player.getName());
 						sender.sendMessage(Main.getMain().getTitle() + ChatColor.GREEN + "등록된 이름이 삭제되었습니다.");
 					}
 					return true;
@@ -158,7 +158,7 @@ public class Main_Command implements CommandExecutor
 						{
 							sender.sendMessage(Main.getMain().getTitle() + ChatColor.YELLOW + "이름 길이가 16자를 넘어갑니다.");
 						}
-						else if(data.isChangeName(args[3]))
+						else if(data.isName(args[3]))
 						{
 							sender.sendMessage(Main.getMain().getTitle() + ChatColor.YELLOW + "이미 존재하는 이름입니다.");
 						}
@@ -169,8 +169,8 @@ public class Main_Command implements CommandExecutor
 							{
 								skin = args[4];
 							}
-							data.addPlayer(player, args[3], skin);
-							sender.sendMessage(Main.getMain().getTitle() + ChatColor.GOLD + args[3] + ChatColor.GREEN + "이름이 등록되었습니다.");
+							data.addPlayer(p.getName(), args[3], skin);
+							sender.sendMessage(Main.getMain().getTitle() + ChatColor.GOLD + args[3] + ChatColor.GREEN + "이름을 등록했습니다.");
 							p.sendMessage(Main.getMain().getTitle() + ChatColor.GOLD + args[3] + ChatColor.GREEN + "이름이 등록되었습니다.");
 						}
 						return true;
@@ -189,8 +189,8 @@ public class Main_Command implements CommandExecutor
 							}
 							else
 							{
-								data.changePlayer(p, true);
-								sender.sendMessage(Main.getMain().getTitle() + ChatColor.GOLD + pd.getChangeName() + ChatColor.GREEN + "이름으로 변경되었습니다.");
+								data.changePlayer(p.getName(), true);
+								sender.sendMessage(Main.getMain().getTitle() + ChatColor.GOLD + pd.getChangeName() + ChatColor.GREEN + "이름으로 변경했습니다.");
 								p.sendMessage(Main.getMain().getTitle() + ChatColor.GOLD + pd.getChangeName() + ChatColor.GREEN + "이름으로 변경되었습니다.");
 							}
 							return true;
@@ -207,8 +207,8 @@ public class Main_Command implements CommandExecutor
 							}
 							else
 							{
-								data.changePlayer(p, false);
-								sender.sendMessage(Main.getMain().getTitle() + ChatColor.GREEN + "이름 변경이 취소되었습니다.");
+								data.changePlayer(p.getName(), false);
+								sender.sendMessage(Main.getMain().getTitle() + ChatColor.GREEN + "이름 변경을 취소했습니다.");
 								p.sendMessage(Main.getMain().getTitle() + ChatColor.GREEN + "이름 변경이 취소되었습니다.");
 							}
 							return true;
@@ -221,8 +221,8 @@ public class Main_Command implements CommandExecutor
 							}
 							else
 							{
-								data.removePlayer(p);
-								sender.sendMessage(Main.getMain().getTitle() + ChatColor.GREEN + "등록된 이름이 삭제되었습니다.");
+								data.removePlayer(p.getName());
+								sender.sendMessage(Main.getMain().getTitle() + ChatColor.GREEN + "등록된 이름을 삭제했습니다.");
 								p.sendMessage(Main.getMain().getTitle() + ChatColor.GREEN + "등록된 이름이 삭제되었습니다.");
 							}
 							return true;
@@ -236,13 +236,13 @@ public class Main_Command implements CommandExecutor
 				}
 			}
 			sender.sendMessage(ChatColor.GREEN + " = = = = = [ Linmalu Change Name ] = = = = =");
-			LinmaluTellraw.sendCmdChat(player, "/" + label + " 등록 ", ChatColor.GOLD + "/" + label + " 등록 <이름>" + ChatColor.GRAY + " : 이름을 등록합니다.");
+			LinmaluTellraw.sendCmdChat(player, "/" + label + " 등록 ", ChatColor.GOLD + "/" + label + " 등록 <이름> (스킨)" + ChatColor.GRAY + " : 이름과 스킨을 등록합니다.");
 			LinmaluTellraw.sendCmdChat(player, "/" + label + " 변경", ChatColor.GOLD + "/" + label + " 변경" + ChatColor.GRAY + " : 이름을 변경합니다.");
 			LinmaluTellraw.sendCmdChat(player, "/" + label + " 취소", ChatColor.GOLD + "/" + label + " 취소" + ChatColor.GRAY + " : 이름 변경을 취소합니다.");
 			LinmaluTellraw.sendCmdChat(player, "/" + label + " 삭제", ChatColor.GOLD + "/" + label + " 삭제" + ChatColor.GRAY + " : 등록된 이름을 삭제합니다.");
 			LinmaluTellraw.sendCmdChat(player, "/" + label + " 확인", ChatColor.GOLD + "/" + label + " 확인" + ChatColor.GRAY + " : 등록된 이름을 확인합니다.");
 			LinmaluTellraw.sendCmdChat(player, "/" + label + " 리로드", ChatColor.GOLD + "/" + label + " 리로드" + ChatColor.GRAY + " : 설정 파일을 다시 불러옵니다.");
-			LinmaluTellraw.sendCmdChat(player, "/" + label + " 관리자 ", ChatColor.GOLD + "/" + label + " 관리자 <플레이어> <등록/변경/취소/삭제> (이름)" + ChatColor.GRAY + " : 다른 플레이어를 설정합니다.");
+			LinmaluTellraw.sendCmdChat(player, "/" + label + " 관리자 ", ChatColor.GOLD + "/" + label + " 관리자 <플레이어> <등록/변경/취소/삭제> (이름) (스킨)" + ChatColor.GRAY + " : 다른 플레이어를 설정합니다.");
 			sender.sendMessage(ChatColor.YELLOW + "제작자 : " + ChatColor.AQUA + "린마루(Linmalu)" + ChatColor.WHITE + " - http://blog.linmalu.com");
 			sender.sendMessage(ChatColor.YELLOW + "카페 : " + ChatColor.WHITE + "http://cafe.naver.com/craftproducer");
 			LinmaluVersion.check(Main.getMain(), player);

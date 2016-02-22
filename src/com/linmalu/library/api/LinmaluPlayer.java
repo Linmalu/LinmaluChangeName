@@ -110,6 +110,7 @@ public class LinmaluPlayer implements Runnable
 		{
 			WrapperPlayServerNamedEntitySpawn nes = new WrapperPlayServerNamedEntitySpawn(player);
 			nes.setProfile(name != null ? new WrappedGameProfile(player.getUniqueId(), name) : WrappedGameProfile.fromPlayer(player));
+			player.setPlayerListName(nes.getPlayerName());
 			WrapperPlayServerEntityHeadRotation ehr = new WrapperPlayServerEntityHeadRotation();
 			ehr.setEntityId(player.getEntityId());
 			ehr.setHeadYaw(player.getLocation().getYaw());
