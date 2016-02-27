@@ -31,6 +31,10 @@ public class GameData
 		for(String name : config.getKeys(false))
 		{
 			String changeName = config.getString(name + "." + NAME);
+			if(changeName.length() > 16)
+			{
+				changeName = changeName.substring(0, 16);
+			}
 			String skin = config.getString(name + "." + SKIN);
 			boolean change = config.getBoolean(name + "." + CHANGE);
 			if(changeName != null)
@@ -57,10 +61,8 @@ public class GameData
 			e.printStackTrace();
 		}
 	}
-	@SuppressWarnings("deprecation")
 	public void joinEvent(Player player)
 	{
-		player.setPlayerListName(players.containsKey(player.getName()) ? players.get(player.getName()).getNowName() : player.getName());
 		for(String name : players.keySet())
 		{
 			if(players.get(name).getChangeName().equalsIgnoreCase(player.getName()))
@@ -143,7 +145,6 @@ public class GameData
 		changePlayer(name, false);
 		players.remove(name);
 	}
-	@SuppressWarnings("deprecation")
 	public void changePlayer(String name, boolean change)
 	{
 		PlayerData pd = players.get(name);
@@ -151,7 +152,7 @@ public class GameData
 		Player player = Bukkit.getPlayer(name);
 		if(player != null)
 		{
-			LinmaluPlayer.change(player, pd.getNowName(), pd.getNowSkin());
+			LinmaluPlayer.changePlayer(player, pd.getNowName(), pd.getNowSkin());
 		}
 		saveConfig();
 	}

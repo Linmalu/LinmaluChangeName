@@ -11,9 +11,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import com.linmalu.LinmaluLibrary.API.LinmaluTellraw;
 import com.linmalu.changename.data.GameData;
 import com.linmalu.changename.data.PlayerData;
+import com.linmalu.library.api.LinmaluTellraw;
 import com.linmalu.library.api.LinmaluVersion;
 
 public class Main_Command implements CommandExecutor
@@ -147,7 +147,6 @@ public class Main_Command implements CommandExecutor
 			}
 			else if(args.length >= 3 && args[0].equals("관리자"))
 			{
-				@SuppressWarnings("deprecation")
 				Player p = Bukkit.getPlayer(args[1]);
 				if(p != null)
 				{
@@ -236,13 +235,13 @@ public class Main_Command implements CommandExecutor
 				}
 			}
 			sender.sendMessage(ChatColor.GREEN + " = = = = = [ Linmalu Change Name ] = = = = =");
-			LinmaluTellraw.sendCmdChat(player, "/" + label + " 등록 ", ChatColor.GOLD + "/" + label + " 등록 <이름> (스킨)" + ChatColor.GRAY + " : 이름과 스킨을 등록합니다.");
-			LinmaluTellraw.sendCmdChat(player, "/" + label + " 변경", ChatColor.GOLD + "/" + label + " 변경" + ChatColor.GRAY + " : 이름을 변경합니다.");
-			LinmaluTellraw.sendCmdChat(player, "/" + label + " 취소", ChatColor.GOLD + "/" + label + " 취소" + ChatColor.GRAY + " : 이름 변경을 취소합니다.");
-			LinmaluTellraw.sendCmdChat(player, "/" + label + " 삭제", ChatColor.GOLD + "/" + label + " 삭제" + ChatColor.GRAY + " : 등록된 이름을 삭제합니다.");
-			LinmaluTellraw.sendCmdChat(player, "/" + label + " 확인", ChatColor.GOLD + "/" + label + " 확인" + ChatColor.GRAY + " : 등록된 이름을 확인합니다.");
-			LinmaluTellraw.sendCmdChat(player, "/" + label + " 리로드", ChatColor.GOLD + "/" + label + " 리로드" + ChatColor.GRAY + " : 설정 파일을 다시 불러옵니다.");
-			LinmaluTellraw.sendCmdChat(player, "/" + label + " 관리자 ", ChatColor.GOLD + "/" + label + " 관리자 <플레이어> <등록/변경/취소/삭제> (이름) (스킨)" + ChatColor.GRAY + " : 다른 플레이어를 설정합니다.");
+			LinmaluTellraw.sendChat(player, "/" + label + " 등록 ", ChatColor.GOLD + "/" + label + " 등록 <이름> (스킨)" + ChatColor.GRAY + " : 이름과 스킨을 등록합니다.");
+			LinmaluTellraw.sendChat(player, "/" + label + " 변경", ChatColor.GOLD + "/" + label + " 변경" + ChatColor.GRAY + " : 이름을 변경합니다.");
+			LinmaluTellraw.sendChat(player, "/" + label + " 취소", ChatColor.GOLD + "/" + label + " 취소" + ChatColor.GRAY + " : 이름 변경을 취소합니다.");
+			LinmaluTellraw.sendChat(player, "/" + label + " 삭제", ChatColor.GOLD + "/" + label + " 삭제" + ChatColor.GRAY + " : 등록된 이름을 삭제합니다.");
+			LinmaluTellraw.sendChat(player, "/" + label + " 확인", ChatColor.GOLD + "/" + label + " 확인" + ChatColor.GRAY + " : 등록된 이름을 확인합니다.");
+			LinmaluTellraw.sendChat(player, "/" + label + " 리로드", ChatColor.GOLD + "/" + label + " 리로드" + ChatColor.GRAY + " : 설정 파일을 다시 불러옵니다.");
+			LinmaluTellraw.sendChat(player, "/" + label + " 관리자 ", ChatColor.GOLD + "/" + label + " 관리자 <플레이어> <등록/변경/취소/삭제> (이름) (스킨)" + ChatColor.GRAY + " : 다른 플레이어를 설정합니다.");
 			sender.sendMessage(ChatColor.YELLOW + "제작자 : " + ChatColor.AQUA + "린마루(Linmalu)" + ChatColor.WHITE + " - http://blog.linmalu.com");
 			sender.sendMessage(ChatColor.YELLOW + "카페 : " + ChatColor.WHITE + "http://cafe.naver.com/craftproducer");
 			LinmaluVersion.check(Main.getMain(), player);

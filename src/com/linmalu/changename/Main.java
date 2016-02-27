@@ -1,39 +1,33 @@
 package com.linmalu.changename;
 
-import org.bukkit.ChatColor;
-import org.bukkit.plugin.java.JavaPlugin;
-
-import com.comphenix.protocol.ProtocolLibrary;
 import com.linmalu.changename.data.GameData;
+import com.linmalu.library.api.LinmaluMain;
 
-public class Main extends JavaPlugin
+public class Main extends LinmaluMain
 {
-	private static Main main;
+	public static Main getMain()
+	{
+		return (Main) LinmaluMain.getMain();
+	}
+
 	private GameData gamedata;
 
+	@Override
 	public void onEnable()
 	{
-		main = this;
 		gamedata = new GameData();
-		getCommand(getDescription().getName()).setExecutor(new Main_Command());
-		getServer().getPluginManager().registerEvents(new Main_Event(), this);
-		ProtocolLibrary.getProtocolManager().addPacketListener(new ProtocolLib_Event());
+		registerCommand(new Main_Command());
+		registerEvents(new Main_Event());
+		new ProtocolLib_Event();
 		getLogger().info("제작 : 린마루(Linmalu)");
 	}
+	@Override
 	public void onDisable()
 	{
 		getLogger().info("제작 : 린마루(Linmalu)");
 	}
-	public static Main getMain()
-	{
-		return main;
-	}
 	public GameData getGameData()
 	{
 		return gamedata;
-	}
-	public String getTitle()
-	{
-		return ChatColor.AQUA + "[" + getDescription().getDescription() + "] ";
 	}
 }

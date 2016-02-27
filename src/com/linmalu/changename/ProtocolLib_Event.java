@@ -1,20 +1,21 @@
 package com.linmalu.changename;
 
-import java.util.UUID;
+import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
+import com.comphenix.packetwrapper.WrapperPlayClientTabComplete;
+import com.comphenix.packetwrapper.WrapperPlayServerPlayerInfo;
+import com.comphenix.packetwrapper.WrapperPlayServerTabComplete;
 import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.reflect.StructureModifier;
+import com.comphenix.protocol.wrappers.EnumWrappers.PlayerInfoAction;
+import com.comphenix.protocol.wrappers.PlayerInfoData;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
-import com.comphenix.protocol.wrappers.WrappedSignedProperty;
-import com.google.common.collect.Multimap;
-import com.linmalu.LinmaluLibrary.packetwrapper.WrapperPlayClientTabComplete;
-import com.linmalu.LinmaluLibrary.packetwrapper.WrapperPlayServerNamedEntitySpawn;
 import com.linmalu.changename.data.GameData;
 import com.linmalu.changename.data.PlayerData;
 import com.linmalu.library.api.LinmaluPlayer;
@@ -25,16 +26,16 @@ public class ProtocolLib_Event extends PacketAdapter
 
 	public ProtocolLib_Event()
 	{
-		super(Main.getMain(), ListenerPriority.NORMAL, PacketType.Play.Server.TAB_COMPLETE, PacketType.Play.Server.NAMED_ENTITY_SPAWN, PacketType.Play.Client.TAB_COMPLETE);
+		super(Main.getMain(), ListenerPriority.NORMAL, PacketType.Play.Server.TAB_COMPLETE, PacketType.Play.Server.PLAYER_INFO, PacketType.Play.Client.TAB_COMPLETE);
+		ProtocolLibrary.getProtocolManager().addPacketListener(this);
 	}
 	@Override
-	@SuppressWarnings("deprecation")
 	public void onPacketSending(PacketEvent event)
 	{
 		if(event.getPacketType() == PacketType.Play.Server.TAB_COMPLETE)
 		{
-			StructureModifier<String[]> sm = event.getPacket().getStringArrays();
-			String[] tabs = (String[])sm.read(0);
+			WrapperPlayServerTabComplete packet = new WrapperPlayServerTabComplete(event.getPacket());
+			String[] tabs = packet.getMatches();
 			for(String player : tabs)
 			{
 				if(Bukkit.getPlayer(player) == null)
@@ -47,16 +48,28 @@ public class ProtocolLib_Event extends PacketAdapter
 				tabs[i] = data.getNowName(tabs[i]);
 			}
 		}
-		else if(event.getPacketType() == PacketType.Play.Server.NAMED_ENTITY_SPAWN)
+		else if(event.getPacketType() == PacketType.Play.Server.PLAYER_INFO)
 		{
-			WrapperPlayServerNamedEntitySpawn nes = new WrapperPlayServerNamedEntitySpawn(event.getPacket());
-			Player player = Bukkit.getPlayer(UUID.fromString(nes.getPlayerUUID()));
-			String name = data.getNowName(nes.getPlayerName());
-			WrappedGameProfile wgp = new WrappedGameProfile(nes.getPlayerUUID(), name);
-			PlayerData pd = data.getPlayer(player.getName());
-			Multimap<String, WrappedSignedProperty> wsp = LinmaluPlayer.getProperties(pd == null ? player.getName() : pd.getNowSkin());
-			wgp.getProperties().putAll(wsp == null ? WrappedGameProfile.fromPlayer(player).getProperties() : wsp);
-			nes.setProfile(wgp);
+			WrapperPlayServerPlayerInfo packet = new WrapperPlayServerPlayerInfo(event.getPacket());
+			if(packet.getAction() == PlayerInfoAction.ADD_PLAYER)
+			{
+				ArrayList<PlayerInfoData> list = new ArrayList<>();
+				for(PlayerInfoData info : packet.getData())
+				{
+					PlayerData pd = data.getPlayer(data.getName(info.getProfile().getName()));
+					if(pd != null && pd.isChange())
+					{
+						WrappedGameProfile gp = new WrappedGameProfile(info.getProfile().getUUID(), pd.getNowName());
+						gp.getProperties().putAll(LinmaluPlayer.getWrappedSignedPropertys(pd.getNowSkin()));
+						list.add(new PlayerInfoData(gp, info.getPing(), info.getGameMode(), WrappedChatComponent.fromText(gp.getName())));
+					}
+					else
+					{
+						list.add(info);
+					}
+				}
+				packet.setData(list);
+			}
 		}
 	}
 	@Override
@@ -64,14 +77,14 @@ public class ProtocolLib_Event extends PacketAdapter
 	{
 		if(event.getPacketType() == PacketType.Play.Client.TAB_COMPLETE)
 		{
-			WrapperPlayClientTabComplete tc = new WrapperPlayClientTabComplete(event.getPacket());
-			String s = tc.getText();
+			WrapperPlayClientTabComplete packet = new WrapperPlayClientTabComplete(event.getPacket());
+			String s = packet.getText();
 			if(!s.endsWith(" "))
 			{
 				int i = s.lastIndexOf(" ");
 				if(i != -1)
 				{
-					tc.setText(s.substring(0, i + 1));
+					packet.setText(s.substring(0, i + 1));
 				}
 			}
 		}
