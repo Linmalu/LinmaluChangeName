@@ -76,6 +76,11 @@ public class GameData
 				return;
 			}
 		}
+		if(players.containsKey(player.getName()))
+		{
+			PlayerData pd = players.get(player.getName());
+			LinmaluPlayer.changePlayer(player, pd.getNowName(), pd.getNowSkin());
+		}
 	}
 	public boolean isName(String name)
 	{
